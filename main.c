@@ -194,8 +194,7 @@ void perform_operations_mutex(struct list_node_s *head) {
     printf("Delete: %.2f\n", global_delete / total_operations);
     printf("Elapsed time with mutex: %.10f seconds\n", (end - start) / CLOCKS_PER_SEC);
     
-  
-}
+} /* perform_operations_mutex */
 
 void perform_operations_rwlock(struct list_node_s *head) {
 
@@ -221,7 +220,7 @@ void perform_operations_rwlock(struct list_node_s *head) {
     printf("Delete: %.2f\n", global_delete / total_operations);
     printf("Elapsed time with mutex: %.10f seconds\n", (end - start) / CLOCKS_PER_SEC);
   
-}
+} /* perform_operations_rwlock */
 
 int main(int argc, char *argv[]) {
     if (argc != 2) {
