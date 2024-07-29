@@ -40,18 +40,18 @@ For example:
 =====================================================================
 |                          Test Details                             |
 =====================================================================
-| Number of threads                      :                    4     |
-| n(Initial list size)                   :                12345     |
-| m(Operations to perform)               :                67890     |
+| Number of threads                        :                  5000  |
+| n(Initial list size)                     :                 24865  |
+| m(Operations to perform)                 :                 58721  |
 ---------------------------------------------------------------------
-| Percentage of mMember                  :                 33.33%   |
-| Percentage of mInsert                  :                 33.33%   |
-| Percentage of mDelete                  :                 33.33%   |
+| Percentage of mMember                    :                  0.16  |
+| Percentage of mInsert                    :                  0.16  |
+| Percentage of mDelete                    :                  0.68  |
 =====================================================================
 
 --------------------------------------------------------------------
 
-Populating list with 12345 random elements
+Populating list with 24865 random elements
 List populated
 
 --------------------------------------------------------------------
@@ -60,10 +60,48 @@ List populated
 |                   Performing serial operations                    |
 =====================================================================
     => Each operation as a percentage of Total operations
-       - Member: 33.33%
-       - Insert: 33.33%
-       - Delete: 33.33%
-    Elapsed time with serial: 0.1234567890 seconds
+       - Member: 0.16
+       - Insert: 0.16
+       - Delete: 0.67
+    Elapsed time with serial: 7.8626260000 seconds
+=====================================================================
+
+
+=====================================================================
+|                Performing operations with mutex                   |
+=====================================================================
+make: *** [Makefile:18: run] Segmentation fault (core dumped)
+┌─[charindu-thisara@charindu-thisara-GF75-Thin-9SC] - [~/CodeBases/Pthread_LinkedList_LAB] - [Mon Jul 29, 20:50]
+└─[$]> make run
+./pth_linked_list.o 5000
+
+=====================================================================
+|                          Test Details                             |
+=====================================================================
+| Number of threads                        :                  5000  |
+| n(Initial list size)                     :                 13758  |
+| m(Operations to perform)                 :                 62648  |
+---------------------------------------------------------------------
+| Percentage of mMember                    :                  0.73  |
+| Percentage of mInsert                    :                  0.23  |
+| Percentage of mDelete                    :                  0.04  |
+=====================================================================
+
+--------------------------------------------------------------------
+
+Populating list with 13758 random elements
+List populated
+
+--------------------------------------------------------------------
+
+=====================================================================
+|                   Performing serial operations                    |
+=====================================================================
+    => Each operation as a percentage of Total operations
+       - Member: 0.73
+       - Insert: 0.23
+       - Delete: 0.04
+    Elapsed time with serial: 6.3804070000 seconds
 =====================================================================
 
 
@@ -71,10 +109,10 @@ List populated
 |                Performing operations with mutex                   |
 =====================================================================
     => Each operation as a percentage of Total operations
-       - Member: 33.33%
-       - Insert: 33.33%
-       - Delete: 33.33%
-    Elapsed time with mutex: 0.1234567890 seconds
+       - Member: 0.73
+       - Insert: 0.23
+       - Delete: 0.04
+    Elapsed time with mutex: 2.8328110000 seconds
 =====================================================================
 
 
@@ -82,10 +120,10 @@ List populated
 |              Performing operations with rwlock                    |
 =====================================================================
     => Each operation as a percentage of Total operations
-       - Member: 33.33%
-       - Insert: 33.33%
-       - Delete: 33.33%
-    Elapsed time with rwlock: 0.1234567890 seconds
+      - Member: 0.73
+      - Insert: 0.23
+      - Delete: 0.04
+    Elapsed time with mutex: 3.3895120000 seconds
 =====================================================================
 ```
 
