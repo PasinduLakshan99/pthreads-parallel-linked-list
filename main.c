@@ -12,9 +12,16 @@
 
 pthread_mutex_t mutex;
 pthread_rwlock_t rwlock;
+pthread_mutex_t count_mutex;
+
 int n, m;
 float mMember, mInsert, mDelete;
 int thread_count;
+
+int global_member = 0;
+int global_insert = 0;
+int global_delete = 0;
+
 
 void PrintList(struct list_node_s *head_p) {
     struct list_node_s *curr_p = head_p;
@@ -86,6 +93,14 @@ void *mutex_thread_func(void *args) {
 		}
 	}
 
+    pthread_mutex_lock(&count_mutex);
+
+    global_member += local_member;
+    global_insert += local_insert;
+    global_delete += local_delete;
+
+    pthread_mutex_unlock(&count_mutex);  
+
     return NULL;
 }
 
@@ -121,6 +136,14 @@ void *rwlock_thread_func(void *args) {
 		}
 	}
 
+    pthread_mutex_lock(&count_mutex);
+
+    global_member += local_member;
+    global_insert += local_insert;
+    global_delete += local_delete;
+
+    pthread_mutex_unlock(&count_mutex); 
+
     return NULL;
 }
 
@@ -151,6 +174,10 @@ void perform_operations_mutex(struct list_node_s *head) {
 
     pthread_t *thread_handles = malloc(thread_count*sizeof(pthread_t));
 
+    global_member = 0;
+    global_insert = 0;
+    global_delete = 0;
+
     double start = clock();
     for (int i = 0; i < thread_count; i++)
 		pthread_create(&thread_handles[i], NULL, mutex_thread_func, (void*) head);
@@ -160,13 +187,23 @@ void perform_operations_mutex(struct list_node_s *head) {
 
     double end = clock();
 
+    double total_operations = global_delete + global_insert + global_member;
+
+    printf("Member: %.2f\n", global_member / total_operations);
+    printf("Insert: %.2f\n", global_insert / total_operations);
+    printf("Delete: %.2f\n", global_delete / total_operations);
     printf("Elapsed time with mutex: %.10f seconds\n", (end - start) / CLOCKS_PER_SEC);
+    
   
 }
 
 void perform_operations_rwlock(struct list_node_s *head) {
 
     pthread_t *thread_handles = malloc(thread_count*sizeof(pthread_t));
+
+    global_member = 0;
+    global_insert = 0;
+    global_delete = 0;
 
     double start = clock();
     for (int i = 0; i < thread_count; i++)
@@ -177,6 +214,11 @@ void perform_operations_rwlock(struct list_node_s *head) {
 
     double end = clock();
 
+    double total_operations = global_delete + global_insert + global_member;
+
+    printf("Member: %.2f\n", global_member / total_operations);
+    printf("Insert: %.2f\n", global_insert / total_operations);
+    printf("Delete: %.2f\n", global_delete / total_operations);
     printf("Elapsed time with mutex: %.10f seconds\n", (end - start) / CLOCKS_PER_SEC);
   
 }
