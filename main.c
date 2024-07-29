@@ -38,7 +38,6 @@ void populate_list(int n, struct list_node_s **head) {
         do {
             value = rand() % (MAX_VALUE + 1);
         } while (!Insert(value, head)); // Insert returns 0 if value is already in the list
-
     }
 } /* populate_list */
 
@@ -93,6 +92,7 @@ void *mutex_thread_func(void *args) {
 		}
 	}
 
+    // Update global counters with local counters
     pthread_mutex_lock(&count_mutex);
 
     global_member += local_member;
@@ -136,6 +136,7 @@ void *rwlock_thread_func(void *args) {
 		}
 	}
 
+    // Update global counters with local counters
     pthread_mutex_lock(&count_mutex);
 
     global_member += local_member;
@@ -151,6 +152,9 @@ void perform_operations_serial(struct list_node_s *head) {
 
     int value;
     double start = clock();
+    int tot_member=0;
+    int tot_insert=0;
+    int tot_delete=0;
 
     for (int i = 0; i < m; i++) {
 		float op = (rand() % 10000/10000.0);
@@ -158,16 +162,27 @@ void perform_operations_serial(struct list_node_s *head) {
 	  
 		if (op < mMember) {
 			Member(value, head);
+            tot_member++;
 		} else if (op < mMember + mInsert) {
             Insert(value, &head);
+            tot_insert++;
 		} else {
 			Delete(value, &head);
+            tot_delete++;
 		}
 	}
 
     double end = clock();
 
-    printf("Elapsed time with serial: %.10f seconds\n", (end - start) / CLOCKS_PER_SEC);
+    double total_operations = tot_delete + tot_insert + tot_member;
+
+    printf("=> Each operation as a percentage of Total operations\n"); 
+
+    printf("   - Member: %.2f\n", tot_member / total_operations);
+    printf("   - Insert: %.2f\n", tot_insert / total_operations);
+    printf("   - Delete: %.2f\n", tot_delete / total_operations);
+
+    printf("Elapsed time with serial: %.10f seconds\n\n", (end - start) / CLOCKS_PER_SEC);
 } /* perform_operations serial */
 
 void perform_operations_mutex(struct list_node_s *head) {
@@ -189,10 +204,12 @@ void perform_operations_mutex(struct list_node_s *head) {
 
     double total_operations = global_delete + global_insert + global_member;
 
-    printf("Member: %.2f\n", global_member / total_operations);
-    printf("Insert: %.2f\n", global_insert / total_operations);
-    printf("Delete: %.2f\n", global_delete / total_operations);
-    printf("Elapsed time with mutex: %.10f seconds\n", (end - start) / CLOCKS_PER_SEC);
+    printf("=> Each operation as a percentage of Total operations\n"); 
+
+    printf("   - Member: %.2f\n", global_member / total_operations);
+    printf("   - Insert: %.2f\n", global_insert / total_operations);
+    printf("   - Delete: %.2f\n", global_delete / total_operations);
+    printf("Elapsed time with mutex: %.10f seconds\n\n", (end - start) / CLOCKS_PER_SEC);
     
 } /* perform_operations_mutex */
 
@@ -215,10 +232,12 @@ void perform_operations_rwlock(struct list_node_s *head) {
 
     double total_operations = global_delete + global_insert + global_member;
 
-    printf("Member: %.2f\n", global_member / total_operations);
-    printf("Insert: %.2f\n", global_insert / total_operations);
-    printf("Delete: %.2f\n", global_delete / total_operations);
-    printf("Elapsed time with mutex: %.10f seconds\n", (end - start) / CLOCKS_PER_SEC);
+    printf("=> Each operation as a percentage of Total operations\n"); 
+
+    printf("   - Member: %.2f\n", global_member / total_operations);
+    printf("   - Insert: %.2f\n", global_insert / total_operations);
+    printf("   - Delete: %.2f\n", global_delete / total_operations);
+    printf("Elapsed time with mutex: %.10f seconds\n\n", (end - start) / CLOCKS_PER_SEC);
   
 } /* perform_operations_rwlock */
 
@@ -251,13 +270,19 @@ int main(int argc, char *argv[]) {
     pthread_mutex_init(&mutex, NULL);
     pthread_rwlock_init(&rwlock, NULL);
 
-    printf("\nPerforming serial operations\n");
+    printf("\n==================================\n");
+    printf("|  Performing serial operations  |\n");
+    printf("==================================\n");
     perform_operations_serial(head);
 
-    printf("\nPerforming operations with mutex\n");
+    printf("\n======================================\n");
+    printf("|  Performing operations with mutex  |\n");
+    printf("======================================\n");
     perform_operations_mutex(list_mutex);
 
-    printf("\nPerforming operations with rwlock\n");
+    printf("\n=======================================\n");
+    printf("|  Performing operations with rwlock  |\n");
+    printf("=======================================\n");
     perform_operations_rwlock(list_rwlock);
 
     pthread_rwlock_destroy(&rwlock);
