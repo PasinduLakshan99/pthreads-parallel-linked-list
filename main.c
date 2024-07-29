@@ -176,13 +176,13 @@ void perform_operations_serial(struct list_node_s *head) {
 
     double total_operations = tot_delete + tot_insert + tot_member;
 
-    printf("=> Each operation as a percentage of Total operations\n"); 
+    printf("    => Each operation as a percentage of Total operations\n"); 
 
-    printf("   - Member: %.2f\n", tot_member / total_operations);
-    printf("   - Insert: %.2f\n", tot_insert / total_operations);
-    printf("   - Delete: %.2f\n", tot_delete / total_operations);
+    printf("       - Member: %.2f\n", tot_member / total_operations);
+    printf("       - Insert: %.2f\n", tot_insert / total_operations);
+    printf("       - Delete: %.2f\n", tot_delete / total_operations);
 
-    printf("Elapsed time with serial: %.10f seconds\n\n", (end - start) / CLOCKS_PER_SEC);
+    printf("    Elapsed time with serial: %.10f seconds\n\n", (end - start) / CLOCKS_PER_SEC);
 } /* perform_operations serial */
 
 void perform_operations_mutex(struct list_node_s *head) {
@@ -204,12 +204,12 @@ void perform_operations_mutex(struct list_node_s *head) {
 
     double total_operations = global_delete + global_insert + global_member;
 
-    printf("=> Each operation as a percentage of Total operations\n"); 
+    printf("    => Each operation as a percentage of Total operations\n"); 
 
-    printf("   - Member: %.2f\n", global_member / total_operations);
-    printf("   - Insert: %.2f\n", global_insert / total_operations);
-    printf("   - Delete: %.2f\n", global_delete / total_operations);
-    printf("Elapsed time with mutex: %.10f seconds\n\n", (end - start) / CLOCKS_PER_SEC);
+    printf("       - Member: %.2f\n", global_member / total_operations);
+    printf("       - Insert: %.2f\n", global_insert / total_operations);
+    printf("       - Delete: %.2f\n", global_delete / total_operations);
+    printf("    Elapsed time with mutex: %.10f seconds\n\n", (end - start) / CLOCKS_PER_SEC);
     
 } /* perform_operations_mutex */
 
@@ -232,12 +232,12 @@ void perform_operations_rwlock(struct list_node_s *head) {
 
     double total_operations = global_delete + global_insert + global_member;
 
-    printf("=> Each operation as a percentage of Total operations\n"); 
+    printf("    => Each operation as a percentage of Total operations\n"); 
 
-    printf("   - Member: %.2f\n", global_member / total_operations);
-    printf("   - Insert: %.2f\n", global_insert / total_operations);
-    printf("   - Delete: %.2f\n", global_delete / total_operations);
-    printf("Elapsed time with mutex: %.10f seconds\n\n", (end - start) / CLOCKS_PER_SEC);
+    printf("       - Member: %.2f\n", global_member / total_operations);
+    printf("      - Insert: %.2f\n", global_insert / total_operations);
+    printf("      - Delete: %.2f\n", global_delete / total_operations);
+    printf("    Elapsed time with mutex: %.10f seconds\n\n", (end - start) / CLOCKS_PER_SEC);
   
 } /* perform_operations_rwlock */
 
@@ -253,16 +253,22 @@ int main(int argc, char *argv[]) {
     thread_count = atoi(argv[1]);
     generate_n_m_and_proportions();
 
-    printf("Details:\n");
-    printf("n = %d\n", n);
-    printf("m = %d\n", m);
-    printf("mMember = %.2f\n", mMember);
-    printf("mInsert = %.2f\n", mInsert);
-    printf("mDelete = %.2f\n", mDelete);
+    printf("\n=====================================================================\n");
+    printf("|                          Test Details                             |\n");
+    printf("=====================================================================\n");
+    printf("| %-40s : %21d  |\n", "n(Initial list size)", n);
+    printf("| %-40s : %21d  |\n", "m(Operations to perform)", m);
+    printf("---------------------------------------------------------------------\n");
+    printf("| %-40s : %20.2f%%  |\n", "Percentage of mMember", mMember);
+    printf("| %-40s : %20.2f%%  |\n", "Percentage of mInsert", mInsert);
+    printf("| %-40s : %20.2f%%  |\n", "Percentage of mDelete", mDelete);
+    printf("=====================================================================\n");
 
-    printf("\nPopulating list with %d elements\n", n);
+    printf("\n--------------------------------------------------------------------\n");
+    printf("\nPopulating list with %d random elements\n", n);
     populate_list(n, &head);
     printf("List populated\n");
+    printf("\n--------------------------------------------------------------------\n");
 
     struct list_node_s *list_mutex = CopyList(head);
     struct list_node_s *list_rwlock = CopyList(head);
@@ -270,19 +276,19 @@ int main(int argc, char *argv[]) {
     pthread_mutex_init(&mutex, NULL);
     pthread_rwlock_init(&rwlock, NULL);
 
-    printf("\n==================================\n");
-    printf("|  Performing serial operations  |\n");
-    printf("==================================\n");
+    printf("\n=====================================================================\n");
+    printf("|                   Performing serial operations                    |\n");
+    printf("=====================================================================\n");
     perform_operations_serial(head);
 
-    printf("\n======================================\n");
-    printf("|  Performing operations with mutex  |\n");
-    printf("======================================\n");
+    printf("\n=====================================================================\n");
+    printf("|                Performing operations with mutex                   |\n");
+    printf("=====================================================================\n");
     perform_operations_mutex(list_mutex);
 
-    printf("\n=======================================\n");
-    printf("|  Performing operations with rwlock  |\n");
-    printf("=======================================\n");
+    printf("\n=====================================================================\n");
+    printf("|              Performing operations with rwlock                    |\n");
+    printf("=====================================================================\n");
     perform_operations_rwlock(list_rwlock);
 
     pthread_rwlock_destroy(&rwlock);
