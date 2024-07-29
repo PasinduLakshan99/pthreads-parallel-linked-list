@@ -182,7 +182,7 @@ void perform_operations_serial(struct list_node_s *head) {
     printf("       - Insert: %.2f\n", tot_insert / total_operations);
     printf("       - Delete: %.2f\n", tot_delete / total_operations);
 
-    printf("    Elapsed time with serial: %.10f seconds\n\n", (end - start) / CLOCKS_PER_SEC);
+    printf("    Elapsed time with serial: %.10f seconds\n", (end - start) / CLOCKS_PER_SEC);
 } /* perform_operations serial */
 
 void perform_operations_mutex(struct list_node_s *head) {
@@ -209,7 +209,7 @@ void perform_operations_mutex(struct list_node_s *head) {
     printf("       - Member: %.2f\n", global_member / total_operations);
     printf("       - Insert: %.2f\n", global_insert / total_operations);
     printf("       - Delete: %.2f\n", global_delete / total_operations);
-    printf("    Elapsed time with mutex: %.10f seconds\n\n", (end - start) / CLOCKS_PER_SEC);
+    printf("    Elapsed time with mutex: %.10f seconds\n", (end - start) / CLOCKS_PER_SEC);
     
 } /* perform_operations_mutex */
 
@@ -237,7 +237,7 @@ void perform_operations_rwlock(struct list_node_s *head) {
     printf("      - Member: %.2f\n", global_member / total_operations);
     printf("      - Insert: %.2f\n", global_insert / total_operations);
     printf("      - Delete: %.2f\n", global_delete / total_operations);
-    printf("    Elapsed time with mutex: %.10f seconds\n\n", (end - start) / CLOCKS_PER_SEC);
+    printf("    Elapsed time with mutex: %.10f seconds\n", (end - start) / CLOCKS_PER_SEC);
   
 } /* perform_operations_rwlock */
 
@@ -280,16 +280,19 @@ int main(int argc, char *argv[]) {
     printf("|                   Performing serial operations                    |\n");
     printf("=====================================================================\n");
     perform_operations_serial(head);
+    printf("=====================================================================\n\n");
 
     printf("\n=====================================================================\n");
     printf("|                Performing operations with mutex                   |\n");
     printf("=====================================================================\n");
     perform_operations_mutex(list_mutex);
+    printf("=====================================================================\n\n");
 
     printf("\n=====================================================================\n");
     printf("|              Performing operations with rwlock                    |\n");
     printf("=====================================================================\n");
     perform_operations_rwlock(list_rwlock);
+    printf("=====================================================================\n");
 
     pthread_rwlock_destroy(&rwlock);
     pthread_mutex_destroy(&mutex);
