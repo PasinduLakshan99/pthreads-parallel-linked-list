@@ -1,0 +1,27 @@
+/MatrixMul/pth_matrix_mul
+/HelloWorld/pth_hello
+/Compute_pi/pth_calc_pi
+
+# Ignore object files and other temporary files
+*.o
+*.obj
+*.so
+*.a
+*.out
+*.log
+*.tmp
+
+# Ignore backup files
+*~
+*.bak
+
+# Ignore directories used for build output
+/build/
+/dist/
+/out/
+/bin/
+
+# Ignore IDE/editor specific files
+.vscode/
+.idea/
+*.swp

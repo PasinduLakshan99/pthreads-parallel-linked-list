@@ -1,0 +1,230 @@
+#include <pthread.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include "linked_list.h"
+
+#define MEMBER 0
+#define INSERT 1
+#define DELETE 2
+
+#define MAX_VALUE 65535 // 2^16 - 1
+
+pthread_mutex_t mutex;
+pthread_rwlock_t rwlock;
+int n, m;
+float mMember, mInsert, mDelete;
+int thread_count;
+
+void PrintList(struct list_node_s *head_p) {
+    struct list_node_s *curr_p = head_p;
+    while (curr_p != NULL) {
+        printf("%d -> ", curr_p->data);
+        curr_p = curr_p->next;
+    }
+    printf("NULL\n");
+} /* PrintList */
+
+void populate_list(int n, struct list_node_s **head) {
+    int value;
+    for (int i = 0; i < n; i++) {
+        do {
+            value = rand() % (MAX_VALUE + 1);
+        } while (!Insert(value, head)); // Insert returns 0 if value is already in the list
+
+    }
+} /* populate_list */
+
+void generate_n_m_and_proportions() {
+    
+    n = rand() % (MAX_VALUE + 1);
+    m = rand() % (MAX_VALUE + 1);
+
+    // Generate random proportions
+    float total = 0;
+    mMember = (float)rand() / RAND_MAX;
+    mInsert = (float)rand() / RAND_MAX;
+    mDelete = (float)rand() / RAND_MAX;
+
+    // Normalize to make the sum equal to 1
+    total = mMember + mInsert + mDelete;
+    mMember /= total;
+    mInsert /= total;
+    mDelete /= total;
+
+} /* generate_n_m_and_proportions */
+
+void *mutex_thread_func(void *args) {
+    struct list_node_s *head = (struct list_node_s *)args;
+	
+	int local_member=0;
+	int local_insert=0;
+	int local_delete=0;
+    int value;
+	
+	int ops_per_thread = m/thread_count;
+
+	for (int i = 0; i < ops_per_thread; i++) {
+		float op = (rand() % 10000/10000.0);
+		value = rand() % MAX_VALUE;
+	  
+		if (op < mMember) {
+			pthread_mutex_lock(&mutex);
+			Member(value, head);
+			pthread_mutex_unlock(&mutex);
+			local_member++;
+		} else if (op < mMember + mInsert) {
+			pthread_mutex_lock(&mutex);
+            Insert(value, &head);
+			pthread_mutex_unlock(&mutex);
+			local_insert++;
+		} else {
+			pthread_mutex_lock(&mutex);
+			Delete(value, &head);
+			pthread_mutex_unlock(&mutex);
+			local_delete++;
+		}
+	}
+
+    return NULL;
+}
+
+void *rwlock_thread_func(void *args) {
+    struct list_node_s *head = (struct list_node_s *)args;
+	
+	int local_member=0;
+	int local_insert=0;
+	int local_delete=0;
+    int value;
+	
+	int ops_per_thread = m/thread_count;
+
+	for (int i = 0; i < ops_per_thread; i++) {
+		float op = (rand() % 10000/10000.0);
+		value = rand() % MAX_VALUE;
+	  
+		if (op < mMember) {
+			pthread_rwlock_rdlock(&rwlock);
+			Member(value, head);
+			pthread_rwlock_unlock(&rwlock);
+			local_member++;
+		} else if (op < mMember + mInsert) {
+			pthread_rwlock_wrlock(&rwlock);
+            Insert(value, &head);
+			pthread_rwlock_unlock(&rwlock);
+			local_insert++;
+		} else {
+			pthread_rwlock_wrlock(&rwlock);
+			Delete(value, &head);
+			pthread_rwlock_unlock(&rwlock);
+			local_delete++;
+		}
+	}
+
+    return NULL;
+}
+
+void perform_operations_serial(struct list_node_s *head) { 
+
+    int value;
+    double start = clock();
+
+    for (int i = 0; i < m; i++) {
+		float op = (rand() % 10000/10000.0);
+		value = rand() % MAX_VALUE;
+	  
+		if (op < mMember) {
+			Member(value, head);
+		} else if (op < mMember + mInsert) {
+            Insert(value, &head);
+		} else {
+			Delete(value, &head);
+		}
+	}
+
+    double end = clock();
+
+    printf("Elapsed time with serial: %.10f seconds\n", (end - start) / CLOCKS_PER_SEC);
+} /* perform_operations serial */
+
+void perform_operations_mutex(struct list_node_s *head) {
+
+    pthread_t *thread_handles = malloc(thread_count*sizeof(pthread_t));
+
+    double start = clock();
+    for (int i = 0; i < thread_count; i++)
+		pthread_create(&thread_handles[i], NULL, mutex_thread_func, (void*) head);
+
+    for (int i = 0; i < thread_count; i++)
+        pthread_join(thread_handles[i], NULL);
+
+    double end = clock();
+
+    printf("Elapsed time with mutex: %.10f seconds\n", (end - start) / CLOCKS_PER_SEC);
+  
+}
+
+void perform_operations_rwlock(struct list_node_s *head) {
+
+    pthread_t *thread_handles = malloc(thread_count*sizeof(pthread_t));
+
+    double start = clock();
+    for (int i = 0; i < thread_count; i++)
+		pthread_create(&thread_handles[i], NULL, rwlock_thread_func, (void*) head);
+
+    for (int i = 0; i < thread_count; i++)
+        pthread_join(thread_handles[i], NULL);
+
+    double end = clock();
+
+    printf("Elapsed time with mutex: %.10f seconds\n", (end - start) / CLOCKS_PER_SEC);
+  
+}
+
+int main(int argc, char *argv[]) {
+    if (argc != 2) {
+        fprintf(stderr, "Usage: %s <number of threads>\n", argv[0]);
+        exit(1);
+    }
+    srand(time(NULL)); // Seed random number generator
+
+    struct list_node_s *head = NULL;
+
+    thread_count = atoi(argv[1]);
+    generate_n_m_and_proportions();
+
+    printf("Details:\n");
+    printf("n = %d\n", n);
+    printf("m = %d\n", m);
+    printf("mMember = %.2f\n", mMember);
+    printf("mInsert = %.2f\n", mInsert);
+    printf("mDelete = %.2f\n", mDelete);
+
+    printf("\nPopulating list with %d elements\n", n);
+    populate_list(n, &head);
+    printf("List populated\n");
+
+    struct list_node_s *list_mutex = CopyList(head);
+    struct list_node_s *list_rwlock = CopyList(head);
+
+    pthread_mutex_init(&mutex, NULL);
+    pthread_rwlock_init(&rwlock, NULL);
+
+    printf("\nPerforming serial operations\n");
+    perform_operations_serial(head);
+
+    printf("\nPerforming operations with mutex\n");
+    perform_operations_mutex(list_mutex);
+
+    printf("\nPerforming operations with rwlock\n");
+    perform_operations_rwlock(list_rwlock);
+
+    pthread_rwlock_destroy(&rwlock);
+    pthread_mutex_destroy(&mutex);
+
+    FreeList(list_mutex);
+    FreeList(list_rwlock);
+    FreeList(head);
+
+    return 0;
+}
