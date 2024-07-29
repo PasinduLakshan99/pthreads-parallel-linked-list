@@ -259,9 +259,9 @@ int main(int argc, char *argv[]) {
     printf("| %-40s : %21d  |\n", "n(Initial list size)", n);
     printf("| %-40s : %21d  |\n", "m(Operations to perform)", m);
     printf("---------------------------------------------------------------------\n");
-    printf("| %-40s : %20.2f%%  |\n", "Percentage of mMember", mMember);
-    printf("| %-40s : %20.2f%%  |\n", "Percentage of mInsert", mInsert);
-    printf("| %-40s : %20.2f%%  |\n", "Percentage of mDelete", mDelete);
+    printf("| %-40s : %21.2f  |\n", "Percentage of mMember", mMember);
+    printf("| %-40s : %21.2f  |\n", "Percentage of mInsert", mInsert);
+    printf("| %-40s : %21.2f  |\n", "Percentage of mDelete", mDelete);
     printf("=====================================================================\n");
 
     printf("\n--------------------------------------------------------------------\n");
