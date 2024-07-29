@@ -234,7 +234,7 @@ void perform_operations_rwlock(struct list_node_s *head) {
 
     printf("    => Each operation as a percentage of Total operations\n"); 
 
-    printf("       - Member: %.2f\n", global_member / total_operations);
+    printf("      - Member: %.2f\n", global_member / total_operations);
     printf("      - Insert: %.2f\n", global_insert / total_operations);
     printf("      - Delete: %.2f\n", global_delete / total_operations);
     printf("    Elapsed time with mutex: %.10f seconds\n\n", (end - start) / CLOCKS_PER_SEC);
