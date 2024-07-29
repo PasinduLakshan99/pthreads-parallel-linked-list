@@ -256,6 +256,7 @@ int main(int argc, char *argv[]) {
     printf("\n=====================================================================\n");
     printf("|                          Test Details                             |\n");
     printf("=====================================================================\n");
+    printf("| %-40s : %21d  |\n", "Number of threads", thread_count);
     printf("| %-40s : %21d  |\n", "n(Initial list size)", n);
     printf("| %-40s : %21d  |\n", "m(Operations to perform)", m);
     printf("---------------------------------------------------------------------\n");
