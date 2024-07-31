@@ -28,9 +28,9 @@ For example:
 ```sh
 ./concurrent_list_ops 4
 ```
-If you have make installed, then.
+If you have make installed, then:
 ```sh
-make run
+make run threads=<number_of_threads>
 ```
 
 ## Program Details
