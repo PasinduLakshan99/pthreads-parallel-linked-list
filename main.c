@@ -4,10 +4,6 @@
 #include <time.h>
 #include "linked_list.h"
 
-#define MEMBER 0
-#define INSERT 1
-#define DELETE 2
-
 #define MAX_VALUE 65535 // 2^16 - 1
 
 pthread_mutex_t mutex;

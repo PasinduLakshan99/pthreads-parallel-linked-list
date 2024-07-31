@@ -15,4 +15,4 @@ clean:
 	rm -f $(TARGET)
 
 run: $(TARGET)
-	./$(TARGET) 1
+	./$(TARGET) 8
