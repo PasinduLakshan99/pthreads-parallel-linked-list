@@ -14,14 +14,13 @@ pthread_mutex_t mutex;
 pthread_rwlock_t rwlock;
 pthread_mutex_t count_mutex;
 
-int n, m;
-float mMember, mInsert, mDelete;
+int n = 1000, m = 10000;
+float mMember = 0.99, mInsert = 0.005, mDelete = 0.005;
 int thread_count;
 
 int global_member = 0;
 int global_insert = 0;
 int global_delete = 0;
-
 
 void PrintList(struct list_node_s *head_p) {
     struct list_node_s *curr_p = head_p;
@@ -178,9 +177,9 @@ void perform_operations_serial(struct list_node_s *head) {
 
     printf("    => Each operation as a percentage of Total operations\n"); 
 
-    printf("       - Member: %.2f\n", tot_member / total_operations);
-    printf("       - Insert: %.2f\n", tot_insert / total_operations);
-    printf("       - Delete: %.2f\n", tot_delete / total_operations);
+    printf("       - Member: %.3f\n", tot_member / total_operations);
+    printf("       - Insert: %.3f\n", tot_insert / total_operations);
+    printf("       - Delete: %.3f\n", tot_delete / total_operations);
 
     printf("    Elapsed time with serial: %.10f seconds\n", (end - start) / CLOCKS_PER_SEC);
 } /* perform_operations serial */
@@ -206,9 +205,9 @@ void perform_operations_mutex(struct list_node_s *head) {
 
     printf("    => Each operation as a percentage of Total operations\n"); 
 
-    printf("       - Member: %.2f\n", global_member / total_operations);
-    printf("       - Insert: %.2f\n", global_insert / total_operations);
-    printf("       - Delete: %.2f\n", global_delete / total_operations);
+    printf("       - Member: %.3f\n", global_member / total_operations);
+    printf("       - Insert: %.3f\n", global_insert / total_operations);
+    printf("       - Delete: %.3f\n", global_delete / total_operations);
     printf("    Elapsed time with mutex: %.10f seconds\n", (end - start) / CLOCKS_PER_SEC);
     
 } /* perform_operations_mutex */
@@ -234,9 +233,9 @@ void perform_operations_rwlock(struct list_node_s *head) {
 
     printf("    => Each operation as a percentage of Total operations\n"); 
 
-    printf("      - Member: %.2f\n", global_member / total_operations);
-    printf("      - Insert: %.2f\n", global_insert / total_operations);
-    printf("      - Delete: %.2f\n", global_delete / total_operations);
+    printf("      - Member: %.3f\n", global_member / total_operations);
+    printf("      - Insert: %.3f\n", global_insert / total_operations);
+    printf("      - Delete: %.3f\n", global_delete / total_operations);
     printf("    Elapsed time with mutex: %.10f seconds\n", (end - start) / CLOCKS_PER_SEC);
   
 } /* perform_operations_rwlock */
@@ -260,9 +259,9 @@ int main(int argc, char *argv[]) {
     printf("| %-40s : %21d  |\n", "n(Initial list size)", n);
     printf("| %-40s : %21d  |\n", "m(Operations to perform)", m);
     printf("---------------------------------------------------------------------\n");
-    printf("| %-40s : %21.2f  |\n", "Percentage of mMember", mMember);
-    printf("| %-40s : %21.2f  |\n", "Percentage of mInsert", mInsert);
-    printf("| %-40s : %21.2f  |\n", "Percentage of mDelete", mDelete);
+    printf("| %-40s : %21.3f  |\n", "Percentage of mMember", mMember);
+    printf("| %-40s : %21.3f  |\n", "Percentage of mInsert", mInsert);
+    printf("| %-40s : %21.3f  |\n", "Percentage of mDelete", mDelete);
     printf("=====================================================================\n");
 
     printf("\n--------------------------------------------------------------------\n");

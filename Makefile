@@ -15,4 +15,4 @@ clean:
 	rm -f $(TARGET)
 
 run: $(TARGET)
-	./$(TARGET) 5000
+	./$(TARGET) 1
