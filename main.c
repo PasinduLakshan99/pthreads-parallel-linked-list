@@ -15,7 +15,7 @@ pthread_rwlock_t rwlock;
 pthread_mutex_t count_mutex;
 
 int n = 1000, m = 10000;
-float mMember = 0.99, mInsert = 0.005, mDelete = 0.005;
+float mMember = 0.50, mInsert = 0.25, mDelete = 0.25;
 int thread_count;
 
 int global_member = 0;
@@ -250,7 +250,7 @@ int main(int argc, char *argv[]) {
     struct list_node_s *head = NULL;
 
     thread_count = atoi(argv[1]);
-    generate_n_m_and_proportions();
+    // generate_n_m_and_proportions();
 
     printf("\n=====================================================================\n");
     printf("|                          Test Details                             |\n");

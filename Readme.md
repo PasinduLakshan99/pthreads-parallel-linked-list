@@ -28,6 +28,10 @@ For example:
 ```sh
 ./concurrent_list_ops 4
 ```
+If you have make installed, then.
+```sh
+make run
+```
 
 ## Program Details
 - The program generates a random initial list size (`n`) and a random number of operations to perform (`m`).
@@ -37,40 +41,6 @@ For example:
 
 ## Example Output
 ```plaintext
-=====================================================================
-|                          Test Details                             |
-=====================================================================
-| Number of threads                        :                  5000  |
-| n(Initial list size)                     :                 24865  |
-| m(Operations to perform)                 :                 58721  |
----------------------------------------------------------------------
-| Percentage of mMember                    :                  0.16  |
-| Percentage of mInsert                    :                  0.16  |
-| Percentage of mDelete                    :                  0.68  |
-=====================================================================
-
---------------------------------------------------------------------
-
-Populating list with 24865 random elements
-List populated
-
---------------------------------------------------------------------
-
-=====================================================================
-|                   Performing serial operations                    |
-=====================================================================
-    => Each operation as a percentage of Total operations
-       - Member: 0.16
-       - Insert: 0.16
-       - Delete: 0.67
-    Elapsed time with serial: 7.8626260000 seconds
-=====================================================================
-
-
-=====================================================================
-|                Performing operations with mutex                   |
-=====================================================================
-make: *** [Makefile:18: run] Segmentation fault (core dumped)
 ┌─[charindu-thisara@charindu-thisara-GF75-Thin-9SC] - [~/CodeBases/Pthread_LinkedList_LAB] - [Mon Jul 29, 20:50]
 └─[$]> make run
 ./pth_linked_list.o 5000
