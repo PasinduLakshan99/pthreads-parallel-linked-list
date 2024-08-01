@@ -14,7 +14,7 @@ pthread_mutex_t mutex;
 pthread_rwlock_t rwlock;
 
 int n = 10000, m = 100000;
-float mMember = 1, mInsert = 0.00, mDelete = 0.00;
+float mMember = 0.99, mInsert = 0.005, mDelete = 0.005;
 int thread_count;
 
 void PrintList(struct list_node_s *head_p) {
@@ -113,13 +113,11 @@ void *rwlock_thread_func(void *args) {
 			pthread_rwlock_wrlock(&rwlock);
             Insert(value, &head);
 			pthread_rwlock_unlock(&rwlock);
-            printf("Inserting %d\n", value);
 			local_insert--;
 		} else if (op == DELETE && local_delete > 0) {
 			pthread_rwlock_wrlock(&rwlock);
 			Delete(value, &head);
 			pthread_rwlock_unlock(&rwlock);
-            printf("Deleting %d\n", value);
 			local_delete--;
 		}
 	}
