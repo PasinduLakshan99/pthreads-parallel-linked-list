@@ -17,10 +17,6 @@ int n = 10000, m = 100000;
 float mMember = 1, mInsert = 0.00, mDelete = 0.00;
 int thread_count;
 
-int global_member = 0;
-int global_insert = 0;
-int global_delete = 0;
-
 void PrintList(struct list_node_s *head_p) {
     struct list_node_s *curr_p = head_p;
     while (curr_p != NULL) {
@@ -156,10 +152,6 @@ void perform_operations_mutex(struct list_node_s *head) {
 
     pthread_t *thread_handles = malloc(thread_count*sizeof(pthread_t));
 
-    global_member = 0;
-    global_insert = 0;
-    global_delete = 0;
-
     double start = clock();
     for (int i = 0; i < thread_count; i++)
 		pthread_create(&thread_handles[i], NULL, mutex_thread_func, (void*) head);
@@ -178,11 +170,8 @@ void perform_operations_rwlock(struct list_node_s *head) {
 
     pthread_t *thread_handles = malloc(thread_count*sizeof(pthread_t));
 
-    global_member = 0;
-    global_insert = 0;
-    global_delete = 0;
-
     double start = clock();
+    
     for (int i = 0; i < thread_count; i++)
 		pthread_create(&thread_handles[i], NULL, rwlock_thread_func, (void*) head);
 
