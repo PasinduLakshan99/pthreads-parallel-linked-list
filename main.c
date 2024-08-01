@@ -113,11 +113,13 @@ void *rwlock_thread_func(void *args) {
 			pthread_rwlock_wrlock(&rwlock);
             Insert(value, &head);
 			pthread_rwlock_unlock(&rwlock);
+            printf("Inserting %d\n", value);
 			local_insert--;
 		} else if (op == DELETE && local_delete > 0) {
 			pthread_rwlock_wrlock(&rwlock);
 			Delete(value, &head);
 			pthread_rwlock_unlock(&rwlock);
+            printf("Deleting %d\n", value);
 			local_delete--;
 		}
 	}
@@ -129,7 +131,9 @@ void perform_operations_serial(struct list_node_s *head) {
 
     int value;
 
-    double start = clock();
+    struct timespec start, end;
+    clock_gettime(CLOCK_MONOTONIC, &start);
+
     for (int i = 0; i < m; i++) {
 		float op = rand() % 3;
 		value = rand() % MAX_VALUE;
@@ -142,27 +146,33 @@ void perform_operations_serial(struct list_node_s *head) {
 			Delete(value, &head);
 		}
 	}
-    double end = clock();
+    clock_gettime(CLOCK_MONOTONIC, &end);
+    double elapsed = (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
 
     printf("    => Each operation as a percentage of Total operations\n"); 
-    printf("    Elapsed time with serial: %.10f seconds\n", (end - start) / CLOCKS_PER_SEC);
+    printf("    Elapsed time with serial: %.10f seconds\n", elapsed);
 } /* perform_operations serial */
 
 void perform_operations_mutex(struct list_node_s *head) {
 
     pthread_t *thread_handles = malloc(thread_count*sizeof(pthread_t));
 
-    double start = clock();
+    struct timespec start, end;
+    clock_gettime(CLOCK_MONOTONIC, &start);
+
     for (int i = 0; i < thread_count; i++)
 		pthread_create(&thread_handles[i], NULL, mutex_thread_func, (void*) head);
 
     for (int i = 0; i < thread_count; i++)
         pthread_join(thread_handles[i], NULL);
 
-    double end = clock();
+    clock_gettime(CLOCK_MONOTONIC, &end);
+    double elapsed = (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
 
     printf("    => Each operation as a percentage of Total operations\n"); 
-    printf("    Elapsed time with mutex: %.10f seconds\n", (end - start) / CLOCKS_PER_SEC);
+    printf("    Elapsed time with mutex: %.10f seconds\n", elapsed);
+    
+    free(thread_handles);
     
 } /* perform_operations_mutex */
 
@@ -170,18 +180,22 @@ void perform_operations_rwlock(struct list_node_s *head) {
 
     pthread_t *thread_handles = malloc(thread_count*sizeof(pthread_t));
 
-    double start = clock();
-    
+    struct timespec start, end;
+    clock_gettime(CLOCK_MONOTONIC, &start);
+
     for (int i = 0; i < thread_count; i++)
 		pthread_create(&thread_handles[i], NULL, rwlock_thread_func, (void*) head);
 
     for (int i = 0; i < thread_count; i++)
         pthread_join(thread_handles[i], NULL);
 
-    double end = clock();
+    clock_gettime(CLOCK_MONOTONIC, &end);
+    double elapsed = (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
 
     printf("    => Each operation as a percentage of Total operations\n"); 
-    printf("    Elapsed time with mutex: %.10f seconds\n", (end - start) / CLOCKS_PER_SEC);
+    printf("    Elapsed time with rwlock: %.10f seconds\n", elapsed);
+  
+    free(thread_handles);
   
 } /* perform_operations_rwlock */
 
