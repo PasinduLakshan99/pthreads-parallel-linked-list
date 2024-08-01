@@ -4,14 +4,17 @@
 #include <time.h>
 #include "linked_list.h"
 
+#define INSERT 0
+#define DELETE 1
+#define MEMBER 2
+
 #define MAX_VALUE 65535 // 2^16 - 1
 
 pthread_mutex_t mutex;
 pthread_rwlock_t rwlock;
-pthread_mutex_t count_mutex;
 
-int n = 1000, m = 10000;
-float mMember = 0.50, mInsert = 0.25, mDelete = 0.25;
+int n = 10000, m = 100000;
+float mMember = 1, mInsert = 0.00, mDelete = 0.00;
 int thread_count;
 
 int global_member = 0;
@@ -58,43 +61,35 @@ void generate_n_m_and_proportions() {
 void *mutex_thread_func(void *args) {
     struct list_node_s *head = (struct list_node_s *)args;
 	
-	int local_member=0;
-	int local_insert=0;
-	int local_delete=0;
-    int value;
 	
 	int ops_per_thread = m/thread_count;
 
+	int local_member = ops_per_thread* mMember;
+	int local_insert = ops_per_thread* mInsert;
+	int local_delete = ops_per_thread* mDelete;
+    int value;
+
 	for (int i = 0; i < ops_per_thread; i++) {
-		float op = (rand() % 10000/10000.0);
+		float op = rand() % 3;
 		value = rand() % MAX_VALUE;
 	  
-		if (op < mMember) {
+		if (op == MEMBER && local_member > 0) {
 			pthread_mutex_lock(&mutex);
 			Member(value, head);
 			pthread_mutex_unlock(&mutex);
-			local_member++;
-		} else if (op < mMember + mInsert) {
+			local_member--;
+		} else if (op == INSERT && local_insert > 0) {
 			pthread_mutex_lock(&mutex);
             Insert(value, &head);
 			pthread_mutex_unlock(&mutex);
-			local_insert++;
-		} else {
+			local_insert--;
+		} else if (op == DELETE && local_delete > 0) {
 			pthread_mutex_lock(&mutex);
 			Delete(value, &head);
 			pthread_mutex_unlock(&mutex);
-			local_delete++;
+			local_delete--;
 		}
 	}
-
-    // Update global counters with local counters
-    pthread_mutex_lock(&count_mutex);
-
-    global_member += local_member;
-    global_insert += local_insert;
-    global_delete += local_delete;
-
-    pthread_mutex_unlock(&count_mutex);  
 
     return NULL;
 }
@@ -102,43 +97,34 @@ void *mutex_thread_func(void *args) {
 void *rwlock_thread_func(void *args) {
     struct list_node_s *head = (struct list_node_s *)args;
 	
-	int local_member=0;
-	int local_insert=0;
-	int local_delete=0;
-    int value;
 	
 	int ops_per_thread = m/thread_count;
+	int local_member = ops_per_thread* mMember;
+	int local_insert = ops_per_thread* mInsert;
+	int local_delete = ops_per_thread* mDelete;
+    int value;
 
 	for (int i = 0; i < ops_per_thread; i++) {
-		float op = (rand() % 10000/10000.0);
+		float op = rand() % 3;
 		value = rand() % MAX_VALUE;
 	  
-		if (op < mMember) {
+		if (op == MEMBER && local_member > 0) {
 			pthread_rwlock_rdlock(&rwlock);
 			Member(value, head);
 			pthread_rwlock_unlock(&rwlock);
-			local_member++;
-		} else if (op < mMember + mInsert) {
+			local_member--;
+		} else if (op == INSERT && local_insert > 0) {
 			pthread_rwlock_wrlock(&rwlock);
             Insert(value, &head);
 			pthread_rwlock_unlock(&rwlock);
-			local_insert++;
-		} else {
+			local_insert--;
+		} else if (op == DELETE && local_delete > 0) {
 			pthread_rwlock_wrlock(&rwlock);
 			Delete(value, &head);
 			pthread_rwlock_unlock(&rwlock);
-			local_delete++;
+			local_delete--;
 		}
 	}
-
-    // Update global counters with local counters
-    pthread_mutex_lock(&count_mutex);
-
-    global_member += local_member;
-    global_insert += local_insert;
-    global_delete += local_delete;
-
-    pthread_mutex_unlock(&count_mutex); 
 
     return NULL;
 }
