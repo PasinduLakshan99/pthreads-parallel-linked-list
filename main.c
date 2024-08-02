@@ -48,7 +48,7 @@ void *mutex_thread_func(void *args) {
 	int local_delete = ops_per_thread* mDelete;
     int value;
 
-	for (int i = 0; i < ops_per_thread; i++) {
+	while (local_member > 0 || local_insert > 0 || local_delete > 0) {
 		float op = rand() % 3;
 		value = rand() % MAX_VALUE;
 	  
@@ -86,7 +86,7 @@ void *rwlock_thread_func(void *args) {
 	int local_delete = ops_per_thread* mDelete;
     int value;
 
-	for (int i = 0; i < ops_per_thread; i++) {
+	while (local_member > 0 || local_insert > 0 || local_delete > 0) {
 		float op = rand() % 3;
 		value = rand() % MAX_VALUE;
 	  
