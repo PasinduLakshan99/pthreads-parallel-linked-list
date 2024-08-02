@@ -13,7 +13,7 @@
 pthread_mutex_t mutex;
 pthread_rwlock_t rwlock;
 
-int n = 10000, m = 100000;
+int n = 10000, m = 1000000;
 float mMember = 0.99, mInsert = 0.005, mDelete = 0.005;
 int thread_count;
 
@@ -35,13 +35,38 @@ void populate_list(int n, struct list_node_s **head) {
     }
 } /* populate_list */
 
+void *serial_thread_func(void *args) {
+    struct list_node_s *head = (struct list_node_s *)args;
+    int value;
+
+    int local_member = m* mMember;
+    int local_insert = m* mInsert;
+    int local_delete = m* mDelete;
+
+    while (local_member > 0 || local_insert > 0 || local_delete > 0) {
+        float op = rand() % 3;
+        value = rand() % MAX_VALUE;
+      
+        if (op == MEMBER && local_member > 0) {
+            Member(value, head);
+            local_member--;
+        } else if (op == INSERT && local_insert > 0) {
+            Insert(value, &head);
+            local_insert--;
+        } else if (op == DELETE && local_delete > 0) {
+            Delete(value, &head);
+            local_delete--;
+        }
+    }
+
+    return NULL;
+}
+
 void *mutex_thread_func(void *args) {
     struct list_node_s *head = (struct list_node_s *)args;
 	
 	
 	int ops_per_thread = m/thread_count;
-
-    printf("       ops_per_thread: %d\n", ops_per_thread);
 
 	int local_member = ops_per_thread* mMember;
 	int local_insert = ops_per_thread* mInsert;
@@ -79,8 +104,6 @@ void *rwlock_thread_func(void *args) {
 	
 	int ops_per_thread = m/thread_count;
 
-    printf("       ops_per_thread: %d\n", ops_per_thread);
-
 	int local_member = ops_per_thread* mMember;
 	int local_insert = ops_per_thread* mInsert;
 	int local_delete = ops_per_thread* mDelete;
@@ -112,32 +135,13 @@ void *rwlock_thread_func(void *args) {
 }
 
 void perform_operations_serial(struct list_node_s *head) { 
-
-    int value;
-
-    int local_member = m* mMember;
-	int local_insert = m* mInsert;
-	int local_delete = m* mDelete;
-
+    pthread_t thread_handle = (pthread_t)malloc(sizeof(pthread_t));
     struct timespec start, end;
+
     clock_gettime(CLOCK_MONOTONIC, &start);
-
-    for (int i = 0; i < local_member; i++) {
-		value = rand() % MAX_VALUE;
-		Member(value, head);
-    }
-
-    for (int i = 0; i < local_insert; i++) {
-        value = rand() % MAX_VALUE;
-        Insert(value, &head);
-    }
-
-    for (int i = 0; i < local_delete; i++) {
-        value = rand() % MAX_VALUE;
-        Delete(value, &head);
-    }
-
+    pthread_create(&thread_handle, NULL, serial_thread_func, (void*) head);
     clock_gettime(CLOCK_MONOTONIC, &end);
+
     double elapsed = (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
 
     printf("    Elapsed time with serial: %.10f seconds\n", elapsed);
