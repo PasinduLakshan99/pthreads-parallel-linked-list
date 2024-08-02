@@ -35,25 +35,6 @@ void populate_list(int n, struct list_node_s **head) {
     }
 } /* populate_list */
 
-void generate_n_m_and_proportions() {
-    
-    n = rand() % (MAX_VALUE + 1);
-    m = rand() % (MAX_VALUE + 1);
-
-    // Generate random proportions
-    float total = 0;
-    mMember = (float)rand() / RAND_MAX;
-    mInsert = (float)rand() / RAND_MAX;
-    mDelete = (float)rand() / RAND_MAX;
-
-    // Normalize to make the sum equal to 1
-    total = mMember + mInsert + mDelete;
-    mMember /= total;
-    mInsert /= total;
-    mDelete /= total;
-
-} /* generate_n_m_and_proportions */
-
 void *mutex_thread_func(void *args) {
     struct list_node_s *head = (struct list_node_s *)args;
 	
@@ -221,7 +202,6 @@ int main(int argc, char *argv[]) {
     struct list_node_s *head = NULL;
 
     thread_count = atoi(argv[1]);
-    // generate_n_m_and_proportions();
 
     printf("\n=====================================================================\n");
     printf("|                          Test Details                             |\n");
