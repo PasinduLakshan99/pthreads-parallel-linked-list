@@ -82,19 +82,19 @@ void *mutex_thread_func(void *args) {
 		value = rand() % MAX_VALUE;
 	  
 		if (op == MEMBER && local_member > 0) {
-			pthread_mutex_lock(&mutex);
+			// pthread_mutex_lock(&mutex);
 			Member(value, head);
-			pthread_mutex_unlock(&mutex);
+			// pthread_mutex_unlock(&mutex);
 			local_member--;
 		} else if (op == INSERT && local_insert > 0) {
-			pthread_mutex_lock(&mutex);
+			// pthread_mutex_lock(&mutex);
             Insert(value, &head);
-			pthread_mutex_unlock(&mutex);
+			// pthread_mutex_unlock(&mutex);
 			local_insert--;
 		} else if (op == DELETE && local_delete > 0) {
-			pthread_mutex_lock(&mutex);
+			// pthread_mutex_lock(&mutex);
 			Delete(value, &head);
-			pthread_mutex_unlock(&mutex);
+			// pthread_mutex_unlock(&mutex);
 			local_delete--;
 		}
 	}
@@ -244,13 +244,13 @@ int main(int argc, char *argv[]) {
     printf("\n=====================================================================\n");
     printf("|                Performing operations with mutex                   |\n");
     printf("=====================================================================\n");
-    perform_operations_mutex(list_mutex);
+    perform_operations_mutex(head);
     printf("=====================================================================\n\n");
 
     printf("\n=====================================================================\n");
     printf("|              Performing operations with rwlock                    |\n");
     printf("=====================================================================\n");
-    perform_operations_rwlock(list_rwlock);
+    perform_operations_rwlock(head);
     printf("=====================================================================\n");
 
     pthread_rwlock_destroy(&rwlock);
