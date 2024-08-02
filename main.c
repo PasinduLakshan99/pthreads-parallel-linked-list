@@ -14,17 +14,24 @@ pthread_mutex_t mutex;
 pthread_rwlock_t rwlock;
 
 int n = 10000, m = 100000;
-float mMember = 0.99, mInsert = 0.005, mDelete = 0.005;
+float mMember = 0.5, mInsert = 0.25, mDelete = 0.25;
 int thread_count;
 
 void PrintList(struct list_node_s *head_p) {
     struct list_node_s *curr_p = head_p;
+    struct list_node_s *prev_p = NULL;
+    
     while (curr_p != NULL) {
-        printf("%d -> ", curr_p->data);
+        if (prev_p != NULL) {
+            printf("(%d)(%p) [diff: %ld] -> ", curr_p->data, (void *)curr_p, (char *)curr_p - (char *)prev_p);
+        } else {
+            printf("(%d)(%p) -> ", curr_p->data, (void *)curr_p);
+        }
+        prev_p = curr_p;
         curr_p = curr_p->next;
     }
     printf("NULL\n");
-} /* PrintList */
+}
 
 void populate_list(int n, struct list_node_s **head) {
     int value;
