@@ -60,6 +60,8 @@ void *mutex_thread_func(void *args) {
 	
 	int ops_per_thread = m/thread_count;
 
+    printf("ops_per_thread: %d\n", ops_per_thread);
+
 	int local_member = ops_per_thread* mMember;
 	int local_insert = ops_per_thread* mInsert;
 	int local_delete = ops_per_thread* mDelete;
@@ -95,6 +97,9 @@ void *rwlock_thread_func(void *args) {
 	
 	
 	int ops_per_thread = m/thread_count;
+
+    printf("ops_per_thread: %d\n", ops_per_thread);
+
 	int local_member = ops_per_thread* mMember;
 	int local_insert = ops_per_thread* mInsert;
 	int local_delete = ops_per_thread* mDelete;
@@ -136,21 +141,21 @@ void perform_operations_serial(struct list_node_s *head) {
     struct timespec start, end;
     clock_gettime(CLOCK_MONOTONIC, &start);
 
-    while (local_member > 0 || local_insert > 0 || local_delete > 0) {
-		float op = rand() % 3;
+    for (int i = 0; i < local_member; i++) {
 		value = rand() % MAX_VALUE;
-	  
-		if (op == MEMBER && local_member > 0) {
-			Member(value, head);
-            local_member--;
-		} else if (op == INSERT && local_insert > 0) {
-            Insert(value, &head);
-            local_insert--;
-		} else if (op == DELETE && local_delete > 0) {
-			Delete(value, &head);
-            local_delete--;
-		}
-	}
+		Member(value, head);
+    }
+
+    for (int i = 0; i < local_insert; i++) {
+        value = rand() % MAX_VALUE;
+        Insert(value, &head);
+    }
+
+    for (int i = 0; i < local_delete; i++) {
+        value = rand() % MAX_VALUE;
+        Delete(value, &head);
+    }
+
     clock_gettime(CLOCK_MONOTONIC, &end);
     double elapsed = (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
 
@@ -161,6 +166,7 @@ void perform_operations_serial(struct list_node_s *head) {
 void perform_operations_mutex(struct list_node_s *head) {
 
     pthread_t *thread_handles = malloc(thread_count*sizeof(pthread_t));
+    printf("Thread count: %d\n", thread_count);
 
     struct timespec start, end;
     clock_gettime(CLOCK_MONOTONIC, &start);
@@ -185,6 +191,7 @@ void perform_operations_rwlock(struct list_node_s *head) {
 
     pthread_t *thread_handles = malloc(thread_count*sizeof(pthread_t));
 
+    printf("Thread count: %d\n", thread_count);
     struct timespec start, end;
     clock_gettime(CLOCK_MONOTONIC, &start);
 
