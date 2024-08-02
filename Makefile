@@ -15,4 +15,5 @@ clean:
 	rm -f $(TARGET)
 
 run: $(TARGET)
-	./$(TARGET) 8
+#run target with default number of 8 threads and overide the defaukt number of threads when threads = <no.of.threads> is passed as argument
+	./$(TARGET) $(threads)

@@ -35,25 +35,6 @@ void populate_list(int n, struct list_node_s **head) {
     }
 } /* populate_list */
 
-void generate_n_m_and_proportions() {
-    
-    n = rand() % (MAX_VALUE + 1);
-    m = rand() % (MAX_VALUE + 1);
-
-    // Generate random proportions
-    float total = 0;
-    mMember = (float)rand() / RAND_MAX;
-    mInsert = (float)rand() / RAND_MAX;
-    mDelete = (float)rand() / RAND_MAX;
-
-    // Normalize to make the sum equal to 1
-    total = mMember + mInsert + mDelete;
-    mMember /= total;
-    mInsert /= total;
-    mDelete /= total;
-
-} /* generate_n_m_and_proportions */
-
 void *mutex_thread_func(void *args) {
     struct list_node_s *head = (struct list_node_s *)args;
 	
@@ -67,19 +48,23 @@ void *mutex_thread_func(void *args) {
 
 	for (int i = 0; i < ops_per_thread; i++) {
 		float op = rand() % 3;
+		do {
+			op = rand() % 3;
+		} while (op == MEMBER && local_member <= 0 || op == INSERT && local_insert <= 0 || op == DELETE && local_delete <= 0);
+
 		value = rand() % MAX_VALUE;
 	  
-		if (op == MEMBER && local_member > 0) {
+		if (op == MEMBER) {
 			pthread_mutex_lock(&mutex);
 			Member(value, head);
 			pthread_mutex_unlock(&mutex);
 			local_member--;
-		} else if (op == INSERT && local_insert > 0) {
+		} else if (op == INSERT) {
 			pthread_mutex_lock(&mutex);
             Insert(value, &head);
 			pthread_mutex_unlock(&mutex);
 			local_insert--;
-		} else if (op == DELETE && local_delete > 0) {
+		} else if (op == DELETE) {
 			pthread_mutex_lock(&mutex);
 			Delete(value, &head);
 			pthread_mutex_unlock(&mutex);
@@ -101,20 +86,24 @@ void *rwlock_thread_func(void *args) {
     int value;
 
 	for (int i = 0; i < ops_per_thread; i++) {
-		float op = rand() % 3;
+		float op;
+		do {
+			op = rand() % 3;
+		} while (op == MEMBER && local_member <= 0 || op == INSERT && local_insert <= 0 || op == DELETE && local_delete <= 0);
+
 		value = rand() % MAX_VALUE;
 	  
-		if (op == MEMBER && local_member > 0) {
+		if (op == MEMBER) {
 			pthread_rwlock_rdlock(&rwlock);
 			Member(value, head);
 			pthread_rwlock_unlock(&rwlock);
 			local_member--;
-		} else if (op == INSERT && local_insert > 0) {
+		} else if (op == INSERT) {
 			pthread_rwlock_wrlock(&rwlock);
             Insert(value, &head);
 			pthread_rwlock_unlock(&rwlock);
 			local_insert--;
-		} else if (op == DELETE && local_delete > 0) {
+		} else if (op == DELETE) {
 			pthread_rwlock_wrlock(&rwlock);
 			Delete(value, &head);
 			pthread_rwlock_unlock(&rwlock);
@@ -207,7 +196,6 @@ int main(int argc, char *argv[]) {
     struct list_node_s *head = NULL;
 
     thread_count = atoi(argv[1]);
-    // generate_n_m_and_proportions();
 
     printf("\n=====================================================================\n");
     printf("|                          Test Details                             |\n");
