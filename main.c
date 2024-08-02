@@ -129,19 +129,26 @@ void perform_operations_serial(struct list_node_s *head) {
 
     int value;
 
+    int local_member = m* mMember;
+	int local_insert = m* mInsert;
+	int local_delete = m* mDelete;
+
     struct timespec start, end;
     clock_gettime(CLOCK_MONOTONIC, &start);
 
-    for (int i = 0; i < m; i++) {
+    while (local_member > 0 || local_insert > 0 || local_delete > 0) {
 		float op = rand() % 3;
 		value = rand() % MAX_VALUE;
 	  
-		if (op == MEMBER) {
+		if (op == MEMBER && local_member > 0) {
 			Member(value, head);
-		} else if (op == INSERT) {
+            local_member--;
+		} else if (op == INSERT && local_insert > 0) {
             Insert(value, &head);
-		} else {
+            local_insert--;
+		} else if (op == DELETE && local_delete > 0) {
 			Delete(value, &head);
+            local_delete--;
 		}
 	}
     clock_gettime(CLOCK_MONOTONIC, &end);
