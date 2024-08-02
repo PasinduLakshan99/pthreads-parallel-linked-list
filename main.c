@@ -82,19 +82,19 @@ void *mutex_thread_func(void *args) {
 		value = rand() % MAX_VALUE;
 	  
 		if (op == MEMBER && local_member > 0) {
-			// pthread_mutex_lock(&mutex);
+			pthread_mutex_lock(&mutex);
 			Member(value, head);
-			// pthread_mutex_unlock(&mutex);
+			pthread_mutex_unlock(&mutex);
 			local_member--;
 		} else if (op == INSERT && local_insert > 0) {
-			// pthread_mutex_lock(&mutex);
+			pthread_mutex_lock(&mutex);
             Insert(value, &head);
-			// pthread_mutex_unlock(&mutex);
+			pthread_mutex_unlock(&mutex);
 			local_insert--;
 		} else if (op == DELETE && local_delete > 0) {
-			// pthread_mutex_lock(&mutex);
+			pthread_mutex_lock(&mutex);
 			Delete(value, &head);
-			// pthread_mutex_unlock(&mutex);
+			pthread_mutex_unlock(&mutex);
 			local_delete--;
 		}
 	}
