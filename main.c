@@ -13,7 +13,7 @@
 pthread_mutex_t mutex;
 pthread_rwlock_t rwlock;
 
-int n = 10000, m = 1000000;
+int n = 10000, m = 100000;
 float mMember = 0.99, mInsert = 0.005, mDelete = 0.005;
 int thread_count;
 
@@ -42,6 +42,8 @@ void *serial_thread_func(void *args) {
     int local_member = m* mMember;
     int local_insert = m* mInsert;
     int local_delete = m* mDelete;
+
+    printf("    => local_member: %d, local_insert: %d, local_delete: %d\n", local_member, local_insert, local_delete);
 
     while (local_member > 0 || local_insert > 0 || local_delete > 0) {
         float op = rand() % 3;
@@ -72,6 +74,8 @@ void *mutex_thread_func(void *args) {
 	int local_insert = ops_per_thread* mInsert;
 	int local_delete = ops_per_thread* mDelete;
     int value;
+
+    printf("    => local_member: %d, local_insert: %d, local_delete: %d\n", local_member, local_insert, local_delete);
 
 	while (local_member > 0 || local_insert > 0 || local_delete > 0) {
 		float op = rand() % 3;
@@ -109,24 +113,26 @@ void *rwlock_thread_func(void *args) {
 	int local_delete = ops_per_thread* mDelete;
     int value;
 
+    printf("    => local_member: %d, local_insert: %d, local_delete: %d\n", local_member, local_insert, local_delete);
+
 	while (local_member > 0 || local_insert > 0 || local_delete > 0) {
 		float op = rand() % 3;
 		value = rand() % MAX_VALUE;
 	  
 		if (op == MEMBER && local_member > 0) {
-			pthread_rwlock_rdlock(&rwlock);
+			// pthread_rwlock_rdlock(&rwlock);
 			Member(value, head);
-			pthread_rwlock_unlock(&rwlock);
+			// pthread_rwlock_unlock(&rwlock);
 			local_member--;
 		} else if (op == INSERT && local_insert > 0) {
-			pthread_rwlock_wrlock(&rwlock);
+			// pthread_rwlock_wrlock(&rwlock);
             Insert(value, &head);
-			pthread_rwlock_unlock(&rwlock);
+			// pthread_rwlock_unlock(&rwlock);
 			local_insert--;
 		} else if (op == DELETE && local_delete > 0) {
-			pthread_rwlock_wrlock(&rwlock);
+			// pthread_rwlock_wrlock(&rwlock);
 			Delete(value, &head);
-			pthread_rwlock_unlock(&rwlock);
+			// pthread_rwlock_unlock(&rwlock);
 			local_delete--;
 		}
 	}
@@ -140,6 +146,7 @@ void perform_operations_serial(struct list_node_s *head) {
 
     clock_gettime(CLOCK_MONOTONIC, &start);
     pthread_create(&thread_handle, NULL, serial_thread_func, (void*) head);
+    pthread_join(thread_handle, NULL);
     clock_gettime(CLOCK_MONOTONIC, &end);
 
     double elapsed = (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
