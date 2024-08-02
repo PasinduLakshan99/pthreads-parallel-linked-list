@@ -229,6 +229,7 @@ int main(int argc, char *argv[]) {
     printf("List populated\n");
     printf("\n--------------------------------------------------------------------\n");
 
+    struct list_node_s *list_serial = CopyList(head);
     struct list_node_s *list_mutex = CopyList(head);
     struct list_node_s *list_rwlock = CopyList(head);
 
@@ -238,19 +239,19 @@ int main(int argc, char *argv[]) {
     printf("\n=====================================================================\n");
     printf("|                   Performing serial operations                    |\n");
     printf("=====================================================================\n");
-    perform_operations_serial(head);
+    perform_operations_serial(list_serial);
     printf("=====================================================================\n\n");
 
     printf("\n=====================================================================\n");
     printf("|                Performing operations with mutex                   |\n");
     printf("=====================================================================\n");
-    perform_operations_mutex(head);
+    perform_operations_mutex(list_mutex);
     printf("=====================================================================\n\n");
 
     printf("\n=====================================================================\n");
     printf("|              Performing operations with rwlock                    |\n");
     printf("=====================================================================\n");
-    perform_operations_rwlock(head);
+    perform_operations_rwlock(list_rwlock);
     printf("=====================================================================\n");
 
     pthread_rwlock_destroy(&rwlock);
