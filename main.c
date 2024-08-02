@@ -120,19 +120,19 @@ void *rwlock_thread_func(void *args) {
 		value = rand() % MAX_VALUE;
 	  
 		if (op == MEMBER && local_member > 0) {
-			// pthread_rwlock_rdlock(&rwlock);
+			pthread_rwlock_rdlock(&rwlock);
 			Member(value, head);
-			// pthread_rwlock_unlock(&rwlock);
+			pthread_rwlock_unlock(&rwlock);
 			local_member--;
 		} else if (op == INSERT && local_insert > 0) {
-			// pthread_rwlock_wrlock(&rwlock);
+			pthread_rwlock_wrlock(&rwlock);
             Insert(value, &head);
-			// pthread_rwlock_unlock(&rwlock);
+			pthread_rwlock_unlock(&rwlock);
 			local_insert--;
 		} else if (op == DELETE && local_delete > 0) {
-			// pthread_rwlock_wrlock(&rwlock);
+			pthread_rwlock_wrlock(&rwlock);
 			Delete(value, &head);
-			// pthread_rwlock_unlock(&rwlock);
+			pthread_rwlock_unlock(&rwlock);
 			local_delete--;
 		}
 	}
