@@ -41,7 +41,7 @@ void *mutex_thread_func(void *args) {
 	
 	int ops_per_thread = m/thread_count;
 
-    printf("ops_per_thread: %d\n", ops_per_thread);
+    printf("       ops_per_thread: %d\n", ops_per_thread);
 
 	int local_member = ops_per_thread* mMember;
 	int local_insert = ops_per_thread* mInsert;
@@ -79,7 +79,7 @@ void *rwlock_thread_func(void *args) {
 	
 	int ops_per_thread = m/thread_count;
 
-    printf("ops_per_thread: %d\n", ops_per_thread);
+    printf("       ops_per_thread: %d\n", ops_per_thread);
 
 	int local_member = ops_per_thread* mMember;
 	int local_insert = ops_per_thread* mInsert;
@@ -140,14 +140,13 @@ void perform_operations_serial(struct list_node_s *head) {
     clock_gettime(CLOCK_MONOTONIC, &end);
     double elapsed = (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
 
-    printf("    => Each operation as a percentage of Total operations\n"); 
     printf("    Elapsed time with serial: %.10f seconds\n", elapsed);
 } /* perform_operations serial */
 
 void perform_operations_mutex(struct list_node_s *head) {
 
     pthread_t *thread_handles = malloc(thread_count*sizeof(pthread_t));
-    printf("Thread count: %d\n", thread_count);
+    printf("    => Thread count: %d\n", thread_count);
 
     struct timespec start, end;
     clock_gettime(CLOCK_MONOTONIC, &start);
@@ -161,7 +160,6 @@ void perform_operations_mutex(struct list_node_s *head) {
     clock_gettime(CLOCK_MONOTONIC, &end);
     double elapsed = (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
 
-    printf("    => Each operation as a percentage of Total operations\n"); 
     printf("    Elapsed time with mutex: %.10f seconds\n", elapsed);
     
     free(thread_handles);
@@ -172,7 +170,7 @@ void perform_operations_rwlock(struct list_node_s *head) {
 
     pthread_t *thread_handles = malloc(thread_count*sizeof(pthread_t));
 
-    printf("Thread count: %d\n", thread_count);
+    printf("    => Thread count: %d\n", thread_count);
     struct timespec start, end;
     clock_gettime(CLOCK_MONOTONIC, &start);
 
@@ -185,7 +183,6 @@ void perform_operations_rwlock(struct list_node_s *head) {
     clock_gettime(CLOCK_MONOTONIC, &end);
     double elapsed = (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
 
-    printf("    => Each operation as a percentage of Total operations\n"); 
     printf("    Elapsed time with rwlock: %.10f seconds\n", elapsed);
   
     free(thread_handles);
