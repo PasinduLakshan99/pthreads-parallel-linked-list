@@ -16,3 +16,6 @@ clean:
 
 run: $(TARGET)
 	./$(TARGET) $(threads)
+
+gen-csv: $(TARGET)
+	./$(TARGET) -gen-csv $(samples)

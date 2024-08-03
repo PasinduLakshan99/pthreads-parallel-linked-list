@@ -1,6 +1,7 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 #include "linked_list.h"
 
@@ -112,7 +113,7 @@ void *rwlock_thread_func(void *args) {
     return NULL;
 }
 
-void perform_operations_serial(struct list_node_s *head) { 
+double perform_operations_serial(struct list_node_s *head) {
 
     int value;
 
@@ -142,9 +143,11 @@ void perform_operations_serial(struct list_node_s *head) {
     double elapsed = (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
 
     printf("    Elapsed time with serial: %.10f seconds\n", elapsed);
+
+	return elapsed;
 } /* perform_operations serial */
 
-void perform_operations_mutex(struct list_node_s *head) {
+double perform_operations_mutex(struct list_node_s *head) {
 
     pthread_t *thread_handles = malloc(thread_count*sizeof(pthread_t));
     printf("    => Thread count: %d\n", thread_count);
@@ -164,10 +167,11 @@ void perform_operations_mutex(struct list_node_s *head) {
     printf("    Elapsed time with mutex: %.10f seconds\n", elapsed);
     
     free(thread_handles);
-    
+
+	return elapsed;
 } /* perform_operations_mutex */
 
-void perform_operations_rwlock(struct list_node_s *head) {
+double perform_operations_rwlock(struct list_node_s *head) {
 
     pthread_t *thread_handles = malloc(thread_count*sizeof(pthread_t));
 
@@ -185,16 +189,66 @@ void perform_operations_rwlock(struct list_node_s *head) {
     double elapsed = (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
 
     printf("    Elapsed time with rwlock: %.10f seconds\n", elapsed);
-  
-    free(thread_handles);
-  
+
+	free(thread_handles);
+
+	return elapsed;
 } /* perform_operations_rwlock */
 
+void generate_csv(int num_samples) {
+	FILE *file = fopen("output.csv", "w");
+	if (file == NULL) {
+		perror("Unable to open file");
+		exit(EXIT_FAILURE);
+	}
+	fprintf(file, "threads,serial,mutex,rwlock\n");
+
+	int num_iterations = num_samples;  // Number of times to run the loop
+	int threads;
+	double serial, mutex, rwlock;
+
+	for (int i = 1; i<=8 ; i*=2) {
+		for (int j = 0; j < num_iterations; j++) {
+			threads = i;
+			thread_count = i;
+			struct list_node_s *head = NULL;
+			populate_list(n, &head);
+			struct list_node_s *list_serial = CopyList(head);
+			struct list_node_s *list_mutex = CopyList(head);
+			struct list_node_s *list_rwlock = CopyList(head);
+
+			serial = perform_operations_serial(list_serial);
+			mutex = perform_operations_mutex(list_mutex);
+			rwlock = perform_operations_rwlock(list_rwlock);
+
+			fprintf(file, "%d,%.10f,%.10f,%.10f\n", threads, serial, mutex, rwlock);
+
+			FreeList(list_mutex);
+			FreeList(list_rwlock);
+			FreeList(list_serial);
+			FreeList(head);
+		}
+	}
+
+	fclose(file);
+	printf("Data written to output.csv\n");
+}
+
 int main(int argc, char *argv[]) {
-    if (argc != 2) {
-        fprintf(stderr, "Usage: %s <number of threads>\n", argv[0]);
-        exit(1);
-    }
+	if (argc < 2) {
+		fprintf(stderr, "Usage: %s <number of threads> | -gen-csv <number of samples>\n", argv[0]);
+		return EXIT_FAILURE;
+	}
+	if (strcmp(argv[1], "-gen-csv") == 0) {
+		if (argc != 3) {
+			fprintf(stderr, "Usage: %s -gen-csv <number of samples>\n", argv[0]);
+			return EXIT_FAILURE;
+		}
+		int num_samples = atoi(argv[2]);
+		generate_csv(num_samples);
+		return 0;
+	}
+
     srand(time(NULL)); // Seed random number generator
 
     struct list_node_s *head = NULL;

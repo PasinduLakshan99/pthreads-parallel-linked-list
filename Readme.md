@@ -20,10 +20,12 @@ gcc -o concurrent_list_ops main.c linked_list.c -lpthread
 ```
 
 ## Usage
-Run the program with the following command:
+### 1. run the program with a specific number of threads 
+
 ```sh
 ./concurrent_list_ops <number_of_threads>
 ```
+
 For example:
 ```sh
 ./concurrent_list_ops 4
@@ -31,6 +33,21 @@ For example:
 If you have make installed, then:
 ```sh
 make run threads=<number_of_threads>
+```
+
+### 2. Generate a csv file of execution times for thread counts 1,2,4 & 8 with a specified sample size
+```sh
+./concurrent_list_ops -gen-csv <number_of_samples>
+```
+
+For example:
+```
+./concurrent_list_ops -gen-csv 10
+```
+If you have make installed, then:
+
+```sh
+make gen-csv samples=<number_of_samples>
 ```
 
 ## Program Details
