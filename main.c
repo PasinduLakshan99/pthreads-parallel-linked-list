@@ -1,3 +1,4 @@
+#include <math.h>
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -196,6 +197,15 @@ double perform_operations_rwlock(struct list_node_s *head) {
 } /* perform_operations_rwlock */
 
 void generate_csv(int num_samples) {
+
+	int num_iterations = num_samples;  // Number of times to run the loop
+	double serial, mutex, rwlock;
+
+	struct list_node_s *head = NULL;
+	struct list_node_s *list_serial;
+	struct list_node_s *list_mutex;
+	struct list_node_s *list_rwlock;
+
 	FILE *file = fopen("output.csv", "w");
 	if (file == NULL) {
 		perror("Unable to open file");
@@ -203,32 +213,29 @@ void generate_csv(int num_samples) {
 	}
 	fprintf(file, "threads,serial,mutex,rwlock\n");
 
-	int num_iterations = num_samples;  // Number of times to run the loop
-	int threads;
-	double serial, mutex, rwlock;
+	populate_list(n, &head);
 
 	for (int i = 1; i<=8 ; i*=2) {
 		for (int j = 0; j < num_iterations; j++) {
-			threads = i;
 			thread_count = i;
-			struct list_node_s *head = NULL;
-			populate_list(n, &head);
-			struct list_node_s *list_serial = CopyList(head);
-			struct list_node_s *list_mutex = CopyList(head);
-			struct list_node_s *list_rwlock = CopyList(head);
-
-			serial = perform_operations_serial(list_serial);
+			list_mutex = CopyList(head);
+			list_rwlock = CopyList(head);
+			if (thread_count==1) {
+				list_serial = CopyList(head);
+				serial = perform_operations_serial(list_serial);
+			} else {
+				serial = 0;
+			}
 			mutex = perform_operations_mutex(list_mutex);
 			rwlock = perform_operations_rwlock(list_rwlock);
 
-			fprintf(file, "%d,%.10f,%.10f,%.10f\n", threads, serial, mutex, rwlock);
-
-			FreeList(list_mutex);
-			FreeList(list_rwlock);
-			FreeList(list_serial);
-			FreeList(head);
+			fprintf(file, "%d,%.10f,%.10f,%.10f\n", thread_count, serial, mutex, rwlock);
 		}
 	}
+	FreeList(head);
+	FreeList(list_serial);
+	FreeList(list_mutex);
+	FreeList(list_rwlock);
 
 	fclose(file);
 	printf("Data written to output.csv\n");

@@ -12,7 +12,7 @@ $(TARGET): $(SRC)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 clean:
-	rm -f $(TARGET)
+	rm -f $(TARGET) *.csv
 
 run: $(TARGET)
 	./$(TARGET) $(threads)
