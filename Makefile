@@ -15,7 +15,7 @@ clean:
 	rm -f $(TARGET) *.csv
 
 run: $(TARGET)
-	./$(TARGET) $(threads)
+	./$(TARGET) $(threads) $(mMember) $(mInsert)
 
 gen-csv: $(TARGET)
-	./$(TARGET) -gen-csv $(samples)
+	./$(TARGET) -gen-csv $(samples) $(mMember) $(mInsert)

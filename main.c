@@ -15,8 +15,8 @@
 pthread_mutex_t mutex;
 pthread_rwlock_t rwlock;
 
-int n = 10000, m = 100000;
-float mMember = 0.99, mInsert = 0.005, mDelete = 0.005;
+int n = 1000, m = 10000;
+float mMember, mInsert , mDelete ;
 int thread_count;
 
 void PrintList(struct list_node_s *head_p) {
@@ -242,16 +242,19 @@ void generate_csv(int num_samples) {
 }
 
 int main(int argc, char *argv[]) {
-	if (argc < 2) {
-		fprintf(stderr, "Usage: %s <number of threads> | -gen-csv <number of samples>\n", argv[0]);
+	if (argc < 4) {
+		fprintf(stderr, "Usage: %s <number of threads> <nMember> <nInsert> | -gen-csv <number of samples> <nMember> <nInsert>\n", argv[0]);
 		return EXIT_FAILURE;
 	}
 	if (strcmp(argv[1], "-gen-csv") == 0) {
-		if (argc != 3) {
-			fprintf(stderr, "Usage: %s -gen-csv <number of samples>\n", argv[0]);
+		if (argc != 5) {
+			fprintf(stderr, "Usage: %s -gen-csv <number of samples> <nMember> <nInsert>\n", argv[0]);
 			return EXIT_FAILURE;
 		}
 		int num_samples = atoi(argv[2]);
+        mMember = atof(argv[3]);
+        mInsert = atof(argv[4]);
+        mDelete = 1 - mMember - mInsert;
 		generate_csv(num_samples);
 		return 0;
 	}
@@ -261,6 +264,9 @@ int main(int argc, char *argv[]) {
     struct list_node_s *head = NULL;
 
     thread_count = atoi(argv[1]);
+    mMember = atof(argv[2]);
+    mInsert = atof(argv[3]);
+    mDelete = 1 - mMember - mInsert;
 
     printf("\n=====================================================================\n");
     printf("|                          Test Details                             |\n");
