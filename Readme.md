@@ -12,27 +12,36 @@ This program demonstrates concurrent operations (Member, Insert, Delete) on a li
 ## Requirements
 - GCC compiler
 - POSIX thread library (pthread)
+- make (optional)
 
 ## Compilation
 To compile the program, run the following command in the terminal:
 ```sh
 gcc -o concurrent_list_ops main.c linked_list.c -lpthread
 ```
+or if you have make installed, then in the project root directory run:
+```sh
+make 
+```
 
 ## Usage
 ### 1. run the program with a specific number of threads 
 
 ```sh
-./concurrent_list_ops <number_of_threads>
+./concurrent_list_ops <number_of_threads> <nMember> <nInsert>
 ```
 
 For example:
 ```sh
-./concurrent_list_ops <number of threads> <nMember> <nInsert>
+./concurrent_list_ops 4 0.99 0.005
 ```
 If you have make installed, then:
 ```sh
 make run threads=<number_of_threads> mMember=<nMember> nInsert=<nInsert>
+```
+For example:
+```sh
+make run threads=4 mMember=0.99 mInsert=0.005
 ```
 
 ### 2. Generate a csv file of execution times for thread counts 1,2,4 & 8 with a specified sample size
@@ -42,12 +51,17 @@ make run threads=<number_of_threads> mMember=<nMember> nInsert=<nInsert>
 
 For example:
 ```
-./concurrent_list_ops -gen-csv 10
+./concurrent_list_ops -gen-csv 10 0.99 0.005
 ```
 If you have make installed, then:
 
 ```sh
 make gen-csv samples=<number_of_samples> mMember=<nMember> nInsert=<nInsert>
+```
+For example:
+```sh
+make gen-csv samples=10 mMember=0.99 mInsert=0.005
+
 ```
 
 ## Program Details
