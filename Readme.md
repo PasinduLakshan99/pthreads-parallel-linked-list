@@ -25,43 +25,52 @@ make
 ```
 
 ## Usage
-### 1. run the program with a specific number of threads 
+
+
+### 1. Run the Program
+
+#### Run the program with a specific number of threads, and set the proportions of Member and Insert operations:
+
 
 ```sh
 ./concurrent_list_ops <number_of_threads> <nMember> <nInsert>
 ```
 
-For example:
+Example:
 ```sh
 ./concurrent_list_ops 4 0.99 0.005
 ```
-If you have make installed, then:
+--- ---
+#### If you have make installed, you can also use:
 ```sh
 make run threads=<number_of_threads> mMember=<nMember> nInsert=<nInsert>
 ```
-For example:
+
+Example:
 ```sh
 make run threads=4 mMember=0.99 mInsert=0.005
 ```
 
-### 2. Generate a csv file of execution times for thread counts 1,2,4 & 8 with a specified sample size
+### 2. Generate a CSV File of Execution Times
+Generate a CSV file of execution times for thread counts 1, 2, 4, and 8 with a specified sample size:
+
 ```sh
-./concurrent_list_ops -gen-csv <number of samples> <nMember> <nInsert>
+./concurrent_list_ops -gen-csv <number_of_samples> <nMember> <nInsert>
 ```
 
-For example:
-```
+Example:
+```sh
 ./concurrent_list_ops -gen-csv 10 0.99 0.005
 ```
-If you have make installed, then:
-
+--- ---
+If you have make installed, you can also use:
 ```sh
 make gen-csv samples=<number_of_samples> mMember=<nMember> nInsert=<nInsert>
 ```
-For example:
+
+Example:
 ```sh
 make gen-csv samples=10 mMember=0.99 mInsert=0.005
-
 ```
 
 ## Program Details
@@ -73,8 +82,7 @@ make gen-csv samples=10 mMember=0.99 mInsert=0.005
 ## Example Output
 ### Simple run
 ```plaintext
-┌─[charindu-thisara@charindu-thisara-GF75-Thin-9SC] - [~/CodeBases/Pthread_LinkedList_LAB] - [Tue Aug 06, 23:22]
-└─[$]> make run threads=4 mMember=0.99 mInsert=0.005
+lucky@nitro5 ~/pthreads-parallel-linked-list $ make run threads=4 mMember=0.99 mInsert=0.005
 
 ./pth_linked_list.o 4 0.99 0.005
 
@@ -121,9 +129,8 @@ List populated
 ```
 ### Run tests
 ```plaintext
-┌─[charindu-thisara@charindu-thisara-GF75-Thin-9SC] - [~/CodeBases/Pthread_LinkedList_LAB] - [Tue Aug 06, 23:35]
-└─[$]> make gen-csv samples=10 mMember=0.99 mInsert=0.005
-
+lucky@nitro5 ~/pthreads-parallel-linked-list $ make gen-csv samples=10 mMember=0.99 mInsert=0.005
+ 
 gcc -g -Wall -o pth_linked_list.o main.c linked_list.c linked_list.h -lpthread
 ./pth_linked_list.o -gen-csv 10 0.99 0.005
     Elapsed time with serial: 1.7694473610 seconds
@@ -154,9 +161,3 @@ gcc -g -Wall -o pth_linked_list.o main.c linked_list.c linked_list.h -lpthread
     Elapsed time with rwlock: 0.6221404040 seconds
 Data written to output.csv
 ```
-
-## Acknowledgments
-- POSIX Threads Programming tutorial.
-- Random number generation and normalization techniques.
-
-Feel free to contribute or raise issues for improvements. Enjoy experimenting with concurrent programming!
